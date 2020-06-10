@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2019 Hemanth Savarala.
+ *
+ * Licensed under the GNU General Public License v3
+ *
+ * This is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by
+ *  the Free Software Foundation either version 3 of the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ */
+
+package net.karatek.retromusic.views
+
+import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatImageView
+import code.name.monkey.appthemehelper.util.ATHUtil
+import code.name.monkey.appthemehelper.util.ColorUtil
+import net.karatek.retromusic.R
+import net.karatek.retromusic.util.PreferenceUtil
+import net.karatek.retromusic.util.RetroColorUtil
+
+
+class ColorIconsImageView : AppCompatImageView {
+
+    constructor(context: Context) : super(context) {
+        init(context, null)
+    }
+
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        init(context, attrs)
+    }
+
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        init(context, attrs)
+    }
+
+    private fun init(context: Context, attrs: AttributeSet?) {
+        // Load the styled attributes and set their properties
+        val attributes = context.obtainStyledAttributes(attrs, R.styleable.ColorIconsImageView, 0, 0)
+        val color = attributes.getColor(R.styleable.ColorIconsImageView_iconBackgroundColor, Color.RED);
+        setIconBackgroundColor(color)
+        attributes.recycle()
+    }
+
+    fun setIconBackgroundColor(color: Int) {
+        setBackgroundResource(R.drawable.color_circle_gradient)
+        if (ATHUtil.isWindowBackgroundDark(context) && PreferenceUtil.getInstance(context).desaturatedColor()) {
+            val desaturatedColor = RetroColorUtil.desaturateColor(color, 0.4f)
+            backgroundTintList = ColorStateList.valueOf(desaturatedColor)
+            imageTintList = ColorStateList.valueOf(ATHUtil.resolveColor(context,  R.attr.colorSurface))
+        } else {
+            backgroundTintList = ColorStateList.valueOf(ColorUtil.adjustAlpha(color, 0.22f))
+            imageTintList = ColorStateList.valueOf(ColorUtil.withAlpha(color, 0.75f))
+        }
+        requestLayout()
+        invalidate()
+    }
+
+}
